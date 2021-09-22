@@ -1,9 +1,9 @@
 use serde_derive::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-struct PairInfo {
+pub struct PairInfo {
     #[serde(rename = "altname")]
-    alt_name: String,
+    pub alt_name: String,
     #[serde(rename = "wsname")]
     ws_name: String,
     aclass_base: String,
@@ -28,5 +28,5 @@ struct PairInfo {
 #[derive(Serialize, Deserialize)]
 pub struct XbtUsd {
     #[serde(rename = "XXBTZUSD")]
-    pair_info: PairInfo,
+    pub pair_info: PairInfo,
 }

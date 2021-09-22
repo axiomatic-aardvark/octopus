@@ -1,11 +1,120 @@
-use cucumber_rust::{async_trait, Cucumber, World};
+use chrono::{NaiveDateTime, Timelike, Utc};
+use cucumber_rust::{async_trait, t, Cucumber, Steps, World};
+use octopus::api_response::ApiResponse;
+use octopus::server_time::ServerTime;
+use octopus::trading_pair::XbtUsd;
 use std::convert::Infallible;
+use octopus::open_orders::Orders;
 
 pub enum MyWorld {
-    Init,
-    Input(i32, i32),
-    Result(i32),
-    Error,
+    Nothing,
+    ServerTime(ServerTime),
+    TradingPair(XbtUsd),
+    OpenOrders(Orders)
+}
+
+// TODO: Extract steps into separate files to reduce bloat
+pub fn server_time_steps() -> Steps<crate::MyWorld> {
+    let mut steps: Steps<crate::MyWorld> = Steps::new();
+
+    steps.given(
+        "I send a request to fetch the server time",
+        |_world, _ctx| MyWorld::Nothing,
+    );
+
+    steps.when_async(
+        "The server time is returned",
+        t!(|_world, _ctx| {
+            let time = ApiResponse::<ServerTime>::get(String::from(
+                "https://api.kraken.com/0/public/Time",
+            ))
+            .await
+            .unwrap();
+
+            MyWorld::ServerTime(time)
+        }),
+    );
+
+    steps.then("It is equal to the current UTC time", |world, _| {
+        let now = Utc::now();
+
+        match world {
+            MyWorld::ServerTime(time) => assert_eq!(
+                NaiveDateTime::from_timestamp(time.unix_time.into(), 0).minute(),
+                NaiveDateTime::from_timestamp(now.timestamp(), 0).minute()
+            ),
+            _ => panic!("Invalid world state"),
+        }
+        MyWorld::Nothing
+    });
+
+    steps
+}
+
+pub fn trading_pair_steps() -> Steps<crate::MyWorld> {
+    let mut steps: Steps<crate::MyWorld> = Steps::new();
+
+    steps.given(
+        "I send a request to fetch the trading pair info for XBT-USD",
+        |_world, _ctx| MyWorld::Nothing,
+    );
+
+    steps.when_async(
+        "The trading pair info is returned",
+        t!(|_world, _ctx| {
+            let xbt_usd = ApiResponse::<XbtUsd>::get(String::from(
+                "https://api.kraken.com/0/public/AssetPairs?pair=XXBTZUSD",
+            ))
+            .await
+            .unwrap();
+
+            MyWorld::TradingPair(xbt_usd)
+        }),
+    );
+
+    steps.then("The response is valid", |world, _| {
+        match world {
+            MyWorld::TradingPair(xbt_usd) => {
+                assert_eq!(xbt_usd.pair_info.alt_name, "XBTUSD");
+            },
+            _ => panic!("Invalid world state"),
+        }
+        MyWorld::Nothing
+    });
+
+    steps
+}
+
+pub fn open_orders_steps() -> Steps<crate::MyWorld> {
+    let mut steps: Steps<crate::MyWorld> = Steps::new();
+
+    steps.given(
+        "I send a request to fetch the open orders for an account",
+        |_world, _ctx| MyWorld::Nothing,
+    );
+
+    steps.when_async(
+        "The open orders are returned",
+        t!(|_world, _ctx| {
+            let open_orders = Orders::get().await.unwrap();
+            MyWorld::OpenOrders(open_orders)
+        }),
+    );
+
+    steps.then("The response is valid", |world, _| {
+        match world {
+            MyWorld::OpenOrders(open_orders) => {
+                // assert_eq!(serde_json::to_string(&open_orders).unwrap(), "XBTUSD");
+            },
+            MyWorld::Nothing => panic!("Invalid world state lmao"),
+            // TODO: WHY DOES IT STILL HAVE A TRADING PAIR INSIDE :@
+            MyWorld::TradingPair(xbt_usd) => panic!("Invalid world state uuuh"),
+            MyWorld::ServerTime(st) => panic!("Invalid world state damn"),
+        }
+        MyWorld::Nothing
+    });
+
+    steps
 }
 
 #[async_trait(?Send)]
@@ -13,46 +122,7 @@ impl World for MyWorld {
     type Error = Infallible;
 
     async fn new() -> Result<Self, Infallible> {
-        Ok(Self::Init)
-    }
-}
-
-mod test_steps {
-    use crate::MyWorld;
-    use octopus::api_response;
-    use cucumber_rust::Steps;
-
-    pub fn steps() -> Steps<MyWorld> {
-        let mut builder: Steps<MyWorld> = Steps::new();
-
-        builder.given_regex(
-            // This will match the "given" of multiplication
-            r#"^the numbers "(\d)" and "(\d)"$"#,
-            // and store the values inside context, which is a Vec<String>
-            |_world, context| {
-                // We start from [1] because [0] is the entire regex match
-                let world = MyWorld::Input(
-                    context.matches[1].parse::<i32>().unwrap(),
-                    context.matches[2].parse::<i32>().unwrap(),
-                );
-                world
-            },
-        );
-
-        builder.when("the User multiply them", |world, _context| match world {
-            MyWorld::Input(l, r) => MyWorld::Result(multiply(l, r)),
-            _ => MyWorld::Error,
-        });
-
-        builder.then_regex(r#"^the User gets "(\d)" as result$"#, |world, context| {
-            match world {
-                MyWorld::Result(x) => assert_eq!(x.to_string(), context.matches[1]),
-                _ => panic!("Invalid world state"),
-            };
-            MyWorld::Init
-        });
-
-        builder
+        Ok(Self::Nothing)
     }
 }
 
@@ -60,7 +130,9 @@ mod test_steps {
 async fn main() {
     Cucumber::<MyWorld>::new()
         .features(&["./features"])
-        .steps(test_steps::steps())
+        .steps(server_time_steps())
+        .steps(trading_pair_steps())
+        .steps(open_orders_steps())
         .run_and_exit()
         .await
 }
