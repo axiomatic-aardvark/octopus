@@ -7,11 +7,11 @@ use octopus::trading_pair::XbtUsd;
 #[tokio::main]
 async fn main() {
     // TODO: Try to make these str slices
-    let server_time =
-        ApiResponse::<ServerTime>::get(String::from("https://api.kraken.com/0/public/Time")).await;
-    let xbt_usd = ApiResponse::<XbtUsd>::get(String::from(
-        "https://api.kraken.com/0/public/AssetPairs?pair=XXBTZUSD",
-    ))
+    let server_time = ApiResponse::<ServerTime>::get("https://api.kraken.com/0/public/Time").await;
+    let xbt_usd = ApiResponse::<XbtUsd>::get(
+        "https://api.kraken.com/0/public/AssetPairs?pair=XXB\
+        TZUSD",
+    )
     .await;
     let open_orders = Orders::get().await;
 

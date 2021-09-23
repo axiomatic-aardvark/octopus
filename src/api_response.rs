@@ -10,7 +10,7 @@ pub struct ApiResponse<T> {
 }
 
 impl<T: DeserializeOwned> ApiResponse<T> {
-    pub async fn get(url: String) -> Result<T> {
+    pub async fn get(url: &str) -> Result<T> {
         let url = String::from(url);
         let url = Url::parse(url.as_str())?;
 
