@@ -72,7 +72,7 @@ pub fn trading_pair_steps() -> Steps<crate::MyWorld> {
         }),
     );
 
-    steps.then("The response is valid", |world, _| {
+    steps.then("The trading pair response is valid", |world, _| {
         match world {
             MyWorld::TradingPair(xbt_usd) => {
                 assert_eq!(xbt_usd.pair_info.alt_name, "XBTUSD");
@@ -97,19 +97,14 @@ pub fn open_orders_steps() -> Steps<crate::MyWorld> {
         "The open orders are returned",
         t!(|_world, _ctx| {
             let open_orders = Orders::get().await.unwrap();
-            MyWorld::OpenOrders(open_orders)
+           MyWorld::OpenOrders(open_orders)
         }),
     );
 
-    steps.then("The response is valid", |world, _| {
+    steps.then("The open orders response is valid", |world, _| {
         match world {
-            MyWorld::OpenOrders(open_orders) => {
-                // assert_eq!(serde_json::to_string(&open_orders).unwrap(), "XBTUSD");
-            },
-            MyWorld::Nothing => panic!("Invalid world state lmao"),
-            // TODO: WHY DOES IT STILL HAVE A TRADING PAIR INSIDE :@
-            MyWorld::TradingPair(xbt_usd) => panic!("Invalid world state uuuh"),
-            MyWorld::ServerTime(st) => panic!("Invalid world state damn"),
+            MyWorld::OpenOrders(_o) => {},
+            _ => panic!("Invalid world state"),
         }
         MyWorld::Nothing
     });
