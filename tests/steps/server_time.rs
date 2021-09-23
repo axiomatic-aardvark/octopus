@@ -50,15 +50,19 @@ pub fn server_time_steps() -> Steps<crate::MyWorld> {
             match ApiResponse::<ServerTime>::get("https://api.kraken.com/0/public/BadUrl").await {
                 Ok(_) => unreachable!(),
                 Err(e) => {
-                    assert!(e
-                        .to_string()
-                        .contains("error decoding response body: missing field `result`"));
+                    MyWorld::ApiError(e.to_string())
                 }
-            };
-
-            MyWorld::Nothing
+            }
         }),
     );
+
+    steps.then("The error is reported properly", |world, _| {
+        match world {
+            MyWorld::ApiError(e) => assert_eq!(e.to_string(), "[\"EGeneral:Unknown method\"]"),
+            _ => panic!("Invalid world state"),
+        }
+        MyWorld::Nothing
+    });
 
     steps
 }

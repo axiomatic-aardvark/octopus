@@ -11,6 +11,7 @@ pub enum MyWorld {
     ServerTime(ServerTime),
     TradingPair(XbtUsd),
     OpenOrders(Orders),
+    ApiError(String),
 }
 
 #[async_trait(?Send)]

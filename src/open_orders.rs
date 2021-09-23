@@ -1,4 +1,4 @@
-use anyhow::{bail, Result, Error};
+use anyhow::{bail, Error, Result};
 use base64::{decode, encode};
 use dotenv::dotenv;
 use hmac::{Hmac, Mac, NewMac};
