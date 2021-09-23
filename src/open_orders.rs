@@ -1,4 +1,4 @@
-use anyhow::{bail, Result};
+use anyhow::{bail, Result, Error};
 use base64::{decode, encode};
 use dotenv::dotenv;
 use hmac::{Hmac, Mac, NewMac};
@@ -151,6 +151,9 @@ impl Orders {
             .await?;
 
         let response: ApiResponse<Orders> = serde_json::from_str(&res.text().await?)?;
-        Ok(response.result)
+        match response.result {
+            Some(r) => Ok(r),
+            None => Err(Error::msg(serde_json::to_string(&response.error.unwrap())?)),
+        }
     }
 }

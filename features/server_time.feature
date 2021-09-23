@@ -1,6 +1,11 @@
 Feature: Server Time
 
-  Scenario: Fetch from API
+  Scenario: Fetch from API (Success)
     Given I send a request to fetch the server time
     When The server time is returned
     Then It is equal to the current UTC time
+
+  Scenario: Fetch from API (Fail)
+    Given I send a request with a bad url
+    When An error is returned
+    Then The error is reported properly
