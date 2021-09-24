@@ -57,7 +57,10 @@ pub fn trading_pair_steps() -> Steps<crate::MyWorld> {
         |world, _| {
             match world {
                 MyWorld::ApiError(e) => {
-                    assert_eq!(e.to_string(), "An error occurred: [\"EQuery:Unknown asset pair\"]")
+                    assert_eq!(
+                        e.to_string(),
+                        "An error occurred: [\"EQuery:Unknown asset pair\"]"
+                    )
                 }
                 _ => panic!("Invalid world state"),
             }
