@@ -41,9 +41,10 @@ pub fn server_time_steps() -> Steps<crate::MyWorld> {
         MyWorld::Nothing
     });
 
-    steps.given("I send a request to fetch the server time with a bad url", |_world, _ctx| {
-        MyWorld::Nothing
-    });
+    steps.given(
+        "I send a request to fetch the server time with a bad url",
+        |_world, _ctx| MyWorld::Nothing,
+    );
 
     steps.when_async(
         "A bad endpoint error is returned",

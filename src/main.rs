@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use octopus::api_response::ApiResponse;
 use octopus::open_orders::Orders;
-use octopus::reporter::Reporter;
+use octopus::report::Report;
 use octopus::server_time::ServerTime;
 use octopus::trading_pair::XbtUsd;
 
@@ -24,12 +24,12 @@ async fn main() {
 
     let open_orders = Orders::get(api_key, api_secret, otp).await;
 
-    let reporter = Reporter::new(server_time, xbt_usd, open_orders).unwrap_or_else(|e| {
+    let report = Report::new(server_time, xbt_usd, open_orders).unwrap_or_else(|e| {
         panic!(
             "An unexpected error occurred while generating the report:\n{}",
             e.to_string()
         )
     });
 
-    println!("{}", reporter.print_report());
+    println!("{}", report.print_report());
 }

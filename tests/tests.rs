@@ -1,8 +1,9 @@
 mod common;
 mod steps;
-
+use anyhow::Result;
 use cucumber_rust::{async_trait, Cucumber, World};
 use octopus::open_orders::Orders;
+use octopus::report::Report;
 use octopus::server_time::ServerTime;
 use octopus::trading_pair::XbtUsd;
 use std::convert::Infallible;
@@ -16,6 +17,8 @@ pub enum MyWorld {
     TradingPair(XbtUsd),
     OpenOrders(Orders),
     ApiError(String),
+    ReportCtx((Result<ServerTime>, Result<XbtUsd>, Result<Orders>)),
+    Report(Report),
 }
 
 #[async_trait(?Send)]
@@ -34,6 +37,7 @@ async fn main() {
         .steps(steps::server_time::server_time_steps())
         .steps(steps::trading_pair::trading_pair_steps())
         .steps(steps::open_orders::open_orders_steps())
+        .steps(steps::report::report_steps())
         .run_and_exit()
         .await
 }

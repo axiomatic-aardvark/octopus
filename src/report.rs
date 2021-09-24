@@ -4,13 +4,13 @@ use crate::open_orders::Orders;
 use crate::server_time::ServerTime;
 use crate::trading_pair::XbtUsd;
 
-pub struct Reporter {
+pub struct Report {
     server_time_report: String,
     xbt_usd_report: String,
     orders_report: String,
 }
 
-impl Reporter {
+impl Report {
     pub fn new(
         server_time: Result<ServerTime>,
         xbt_usd: Result<XbtUsd>,
@@ -29,7 +29,7 @@ impl Reporter {
             Err(e) => e.to_string(),
         };
 
-        Ok(Reporter {
+        Ok(Report {
             server_time_report,
             xbt_usd_report,
             orders_report,
