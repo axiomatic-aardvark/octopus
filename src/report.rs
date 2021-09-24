@@ -26,7 +26,7 @@ impl Report {
         };
         let orders_report = match orders {
             Ok(o) => serde_json::to_string_pretty(&o)?,
-            Err(e) => e.to_string(),
+            Err(e) => format!("An error occurred: {}", e.to_string()),
         };
 
         Ok(Report {

@@ -115,13 +115,11 @@ pub fn report_steps() -> Steps<crate::MyWorld> {
             let api_secret = dotenv!("API_SECRET");
             let otp = dotenv!("OTP");
 
-            let time = ApiResponse::<ServerTime>::get("https://api.kraken.com/0/public/Time")
-                .await;
+            let time = ApiResponse::<ServerTime>::get("https://api.kraken.com/0/public/Time").await;
 
             let xbt_usd =
                 ApiResponse::get("https://api.kraken.com/0/public/AssetPairs?pair=INVALID_PAIR")
                     .await;
-
 
             let open_orders = Orders::get(api_key, api_secret, otp).await;
 
@@ -167,13 +165,13 @@ pub fn report_steps() -> Steps<crate::MyWorld> {
             let api_secret = dotenv!("API_SECRET");
             let otp = "INVALID_OTP";
 
-            let time = ApiResponse::<ServerTime>::get("https://api.kraken.com/0/public/INVALID_ENDPOINT")
-                .await;
+            let time =
+                ApiResponse::<ServerTime>::get("https://api.kraken.com/0/public/INVALID_ENDPOINT")
+                    .await;
 
             let xbt_usd =
                 ApiResponse::get("https://api.kraken.com/0/public/AssetPairs?pair=INVALID_PAIR")
                     .await;
-
 
             let open_orders = Orders::get(api_key, api_secret, otp).await;
 

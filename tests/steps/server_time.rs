@@ -57,7 +57,7 @@ pub fn server_time_steps() -> Steps<crate::MyWorld> {
     );
 
     steps.then("The bad endpoint error is reported properly", |world, _| {
-        assert_api_error(world, "[\"EGeneral:Unknown method\"]")
+        assert_api_error(world, "An error occurred: [\"EGeneral:Unknown method\"]")
     });
 
     steps

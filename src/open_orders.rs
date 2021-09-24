@@ -15,12 +15,11 @@ type HmacSha512 = Hmac<Sha512>;
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 enum Status {
-    Online,
-    Maintenance,
-    #[serde(rename = "cancel_only")]
-    CancelOnly,
-    #[serde(rename = "post_only")]
-    PostOnly,
+    Pending,
+    Open,
+    Closed,
+    Canceled,
+    Expired,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -28,7 +27,7 @@ struct Order {
     #[serde(rename = "refid")]
     ref_id: Option<String>,
     #[serde(rename = "userref")]
-    user_ref: i32,
+    user_ref: f32,
     status: Status,
     #[serde(rename = "opentm")]
     open_tm: f32,
@@ -37,18 +36,18 @@ struct Order {
     #[serde(rename = "expiretm")]
     expire_tm: f32,
     descr: OrderDescription,
-    vol: f32,
-    vol_exec: f32,
-    cost: f32,
-    fee: f32,
-    price: f32,
+    vol: String,
+    vol_exec: String,
+    cost: String,
+    fee: String,
+    price: String,
     #[serde(rename = "stopprice")]
-    stop_price: f32,
+    stop_price: String,
     #[serde(rename = "limitprice")]
-    limit_price: f32,
+    limit_price: String,
     misc: String,
     oflags: String,
-    trades: Vec<String>,
+    trades: Option<Vec<String>>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -77,8 +76,8 @@ struct OrderDescription {
     kind: Type,
     #[serde(rename = "ordertype")]
     order_type: OrderType,
-    price: f32,
-    price2: f32,
+    price: String,
+    price2: String,
     leverage: String,
     order: String,
     close: String,
@@ -92,7 +91,7 @@ pub struct Orders {
 #[derive(Serialize, Deserialize, Clone)]
 struct RequestData {
     nonce: i64,
-    trades: bool,
+    trades: Option<bool>,
 }
 
 fn get_signature(

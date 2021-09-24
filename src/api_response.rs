@@ -18,7 +18,10 @@ impl<T: DeserializeOwned> ApiResponse<T> {
 
         match response.result {
             Some(r) => Ok(r),
-            None => Err(Error::msg(serde_json::to_string(&response.error.unwrap())?)),
+            None => Err(Error::msg(format!(
+                "An error occurred: {}",
+                serde_json::to_string(&response.error.unwrap())?
+            ))),
         }
     }
 }
