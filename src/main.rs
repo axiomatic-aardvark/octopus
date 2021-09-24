@@ -11,11 +11,9 @@ extern crate dotenv_codegen;
 #[tokio::main]
 async fn main() {
     let server_time = ApiResponse::<ServerTime>::get("https://api.kraken.com/0/public/Time").await;
-    let xbt_usd = ApiResponse::<XbtUsd>::get(
-        "https://api.kraken.com/0/public/AssetPairs?pair=XXB\
-        TZUSD",
-    )
-    .await;
+    let xbt_usd =
+        ApiResponse::<XbtUsd>::get("https://api.kraken.com/0/public/AssetPairs?pair=XXBTZUSD")
+            .await;
 
     dotenv().ok();
     let api_key = dotenv!("API_KEY");
