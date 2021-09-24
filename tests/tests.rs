@@ -1,3 +1,4 @@
+mod common;
 mod steps;
 
 use cucumber_rust::{async_trait, Cucumber, World};
@@ -5,6 +6,9 @@ use octopus::open_orders::Orders;
 use octopus::server_time::ServerTime;
 use octopus::trading_pair::XbtUsd;
 use std::convert::Infallible;
+
+#[macro_use]
+extern crate dotenv_codegen;
 
 pub enum MyWorld {
     Nothing,

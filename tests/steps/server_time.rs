@@ -1,3 +1,4 @@
+use crate::common::assert_api_error;
 use crate::MyWorld;
 use chrono::{NaiveDateTime, Timelike, Utc};
 use cucumber_rust::{t, Steps};
@@ -40,28 +41,22 @@ pub fn server_time_steps() -> Steps<crate::MyWorld> {
         MyWorld::Nothing
     });
 
-    steps.given("I send a request with a bad url", |_world, _ctx| {
+    steps.given("I send a request to fetch the server time with a bad url", |_world, _ctx| {
         MyWorld::Nothing
     });
 
     steps.when_async(
-        "An error is returned",
+        "A bad endpoint error is returned",
         t!(|_world, _ctx| {
             match ApiResponse::<ServerTime>::get("https://api.kraken.com/0/public/BadUrl").await {
                 Ok(_) => unreachable!(),
-                Err(e) => {
-                    MyWorld::ApiError(e.to_string())
-                }
+                Err(e) => MyWorld::ApiError(e.to_string()),
             }
         }),
     );
 
-    steps.then("The error is reported properly", |world, _| {
-        match world {
-            MyWorld::ApiError(e) => assert_eq!(e.to_string(), "[\"EGeneral:Unknown method\"]"),
-            _ => panic!("Invalid world state"),
-        }
-        MyWorld::Nothing
+    steps.then("The bad endpoint error is reported properly", |world, _| {
+        assert_api_error(world, "[\"EGeneral:Unknown method\"]")
     });
 
     steps

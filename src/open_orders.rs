@@ -1,6 +1,5 @@
 use anyhow::{bail, Error, Result};
 use base64::{decode, encode};
-use dotenv::dotenv;
 use hmac::{Hmac, Mac, NewMac};
 use http::{HeaderMap, HeaderValue};
 use reqwest::Url;
@@ -116,12 +115,7 @@ fn get_signature(
 }
 
 impl Orders {
-    pub async fn get() -> Result<Self> {
-        dotenv().ok();
-        let api_key = dotenv!("API_KEY");
-        let api_secret = dotenv!("API_SECRET");
-        let otp = dotenv!("OTP");
-
+    pub async fn get(api_key: &str, api_secret: &str, otp: &str) -> Result<Self> {
         let api_url = "https://api.kraken.com";
         let uri_path = "/0/private/OpenOrders";
 

@@ -6,6 +6,6 @@ Feature: Server Time
     Then It is equal to the current UTC time
 
   Scenario: Fetch from API (Fail)
-    Given I send a request with a bad url
-    When An error is returned
-    Then The error is reported properly
+    Given I send a request to fetch the server time with a bad url
+    When A bad endpoint error is returned
+    Then The bad endpoint error is reported properly

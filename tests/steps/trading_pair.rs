@@ -14,11 +14,10 @@ pub fn trading_pair_steps() -> Steps<crate::MyWorld> {
     steps.when_async(
         "The trading pair info is returned",
         t!(|_world, _ctx| {
-            let xbt_usd = ApiResponse::<XbtUsd>::get(
-                "https://api.kraken.com/0/public/AssetPairs?pair=XXBTZUSD",
-            )
-            .await
-            .unwrap();
+            let xbt_usd =
+                ApiResponse::get("https://api.kraken.com/0/public/AssetPairs?pair=XXBTZUSD")
+                    .await
+                    .unwrap();
 
             MyWorld::TradingPair(xbt_usd)
         }),
@@ -33,6 +32,38 @@ pub fn trading_pair_steps() -> Steps<crate::MyWorld> {
         }
         MyWorld::Nothing
     });
+
+    steps.given(
+        "I send a request to fetch trading pair info with a non-existent pair",
+        |_world, _ctx| MyWorld::Nothing,
+    );
+
+    steps.when_async(
+        "A non-existent pair error is returned",
+        t!(|_world, _ctx| {
+            match ApiResponse::<XbtUsd>::get(
+                "https://api.kraken.com/0/public/AssetPairs?pair=IDoNotExist",
+            )
+            .await
+            {
+                Ok(_) => unreachable!(),
+                Err(e) => MyWorld::ApiError(e.to_string()),
+            }
+        }),
+    );
+
+    steps.then(
+        "The non-existent pair error is reported properly",
+        |world, _| {
+            match world {
+                MyWorld::ApiError(e) => {
+                    assert_eq!(e.to_string(), "[\"EQuery:Unknown asset pair\"]")
+                }
+                _ => panic!("Invalid world state"),
+            }
+            MyWorld::Nothing
+        },
+    );
 
     steps
 }
