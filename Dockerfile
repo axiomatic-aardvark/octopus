@@ -1,5 +1,5 @@
-# Help:
-# sudo docker build . -t octopus:v1
+# Hint:
+# docker build . -t octopus:v1
 # docker run octopus:v1
 
 FROM rust:1.55
