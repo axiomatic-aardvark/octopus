@@ -1,8 +1,8 @@
-# Octopus 🐙
+# Octopus
 
 ![small_octo](https://user-images.githubusercontent.com/32264020/134729476-9c20ac1c-9dbd-4316-bc8e-449aa5ba9897.png)
 
-**Octopus** is a Kraken API client implementation written in Rust. It comes with three functionalities:
+🐙 **Octopus** is a Kraken API client implementation written in Rust. It comes with three functionalities:
 - Fetching server time
 - Fetching information about a trade pair
 - Getting all open orders for a specified user
